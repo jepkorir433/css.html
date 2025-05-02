@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS53 Assignment - Transitions & Animations</title>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Theme Classes */
+        .light-theme {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .dark-theme {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+
+        /* Button Styles with Transition */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animation Styles */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .animation-box {
+            width: 150px;
+            height: 150px;
+            background-color: #4285F4;
+            margin: 30px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .slide-in {
+            animation: slideIn 1s forwards;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Form Styles */
+        .preference-form {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        select, input {
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* Layout */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            color: inherit;
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <h1>CS53 Assignment</h1>
+    <h2>Transitions, Animations, and localStorage</h2>
+
+    <div class="preference-form">
+        <h3>User Preferences</h3>
+        <label for="theme-select">Select Theme:</label>
+        <select id="theme-select">
+            <option value="light">Light Theme</option>
+            <option value="dark">Dark Theme</option>
+        </select>
+
+        <label for="username">Your Name:</label>
+        <input type="text" id="username" placeholder="Enter your name">
+
+        <button id="save-pref">Save Preferences</button>
+        <button id="clear-pref">Clear Preferences</button>
+    </div>
+
+    <div class="controls">
+        <h3>Animation Controls</h3>
+        <button id="slide-btn">Slide In Animation</button>
+        <button id="pulse-btn">Pulse Animation</button>
+        <button id="spin-btn">Spin Animation</button>
+        <button id="reset-btn">Reset Animations</button>
+    </div>
+
+    <div id="animation-box" class="animation-box">
+        Animation Box
+    </div>
+
+    <div id="user-greeting"></div>
+
+    <script>
+        // DOM Elements
+        const themeSelect = document.getElementById('theme-select');
+        const usernameInput = document.getElementById('username');
+        const savePrefBtn = document.getElementById('save-pref');
+        const clearPrefBtn = document.getElementById('clear-pref');
+        const animationBox = document.getElementById('animation-box');
+        const slideBtn = document.getElementById('slide-btn');
+        const pulseBtn = document.getElementById('pulse-btn');
+        const spinBtn = document.getElementById('spin-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const userGreeting = document.getElementById('user-greeting');
+
+        // Load saved preferences
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('theme');
+            const savedName = localStorage.getItem('username');
+
+            if (savedTheme) {
+                document.body.className = `${savedTheme}-theme`;
+                themeSelect.value = savedTheme;
+            }
+
+            if (savedName) {
+                usernameInput.value = savedName;
+                userGreeting.textContent = `Welcome back, ${savedName}!`;
+                userGreeting.style.animation = 'slideIn 1s forwards';
+            }
+        }
+
+        // Save preferences to localStorage
+        function savePreferences() {
+            const selectedTheme = themeSelect.value;
+            const username = usernameInput.value;
+
+            localStorage.setItem('theme', selectedTheme);
+            localStorage.setItem('username', username);
+
+            // Apply theme immediately
+            document.body.className = `${selectedTheme}-theme`;
+
+            // Show greeting if name exists
+            if (username) {
+                userGreeting.textContent = `Preferences saved, ${username}!`;
+                userGreeting.style.animation = 'slideIn 1s forwards';
+                
+                // Reset animation after it completes
+                setTimeout(() => {
+                    userGreeting.style.animation = 'none';
+                }, 1000);
+            }
+
+            alert('Preferences saved successfully!');
+        }
+
+        // Clear preferences
+        function clearPreferences() {
+            localStorage.removeItem('theme');
+            localStorage.removeItem('username');
+            document.body.className = 'light-theme';
+            themeSelect.value = 'light';
+            usernameInput.value = '';
+            userGreeting.textContent = '';
+            alert('Preferences cleared!');
+        }
+
+        // Animation functions
+        function applySlideAnimation() {
+            resetAnimations();
+            animationBox.classList.add('slide-in');
+        }
+
+        function applyPulseAnimation() {
+            resetAnimations();
+            animationBox.classList.add('pulse');
+        }
+
+        function applySpinAnimation() {
+            resetAnimations();
+            animationBox.classList.add('spin');
+        }
+
+        function resetAnimations() {
+            animationBox.className = 'animation-box';
+        }
+
+        // Event Listeners
+        savePrefBtn.addEventListener('click', savePreferences);
+        clearPrefBtn.addEventListener('click', clearPreferences);
+        slideBtn.addEventListener('click', applySlideAnimation);
+        pulseBtn.addEventListener('click', applyPulseAnimation);
+        spinBtn.addEventListener('click', applySpinAnimation);
+        resetBtn.addEventListener('click', resetAnimations);
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', loadPreferences);
+    </script>
+</body>
+</html>
